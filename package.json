@@ -12,7 +12,12 @@
     "build-prod": "webpack -p --mode production",
     "start-dev": "webpack-dev-server --hot --mode development",
     "start": "nodemon server.js",
-    "test": "jest --coverage"
+    "test": "jest --coverage",
+    "lint": "eslint .",
+    "prettier": "prettier --ignore-path .eslintignore  \"**/*.+(js|json)\"",
+    "format": "npm run prettier -- --write",
+    "check-format": "npm run prettier -- --list-different",
+    "validate": "npm run lint"
   },
   "dependencies": {
     "axios": "^0.19.2",
@@ -20,6 +25,7 @@
     "express": "^4.17.1",
     "moment": "^2.27.0",
     "nodemon": "^2.0.4",
+    "prettier": "^2.7.1",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
     "react-bootstrap": "^1.0.1",
@@ -45,7 +51,11 @@
     "enzyme-adapter-react-16": "^1.15.2",
     "enzyme-to-json": "^3.5.0",
     "eslint": "^8.20.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.26.0",
     "file-loader": "^6.0.0",
+    "husky": "^8.0.1",
     "jest": "^26.1.0",
     "sass": "^1.26.10",
     "sass-loader": "^9.0.2",
