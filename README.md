@@ -89,6 +89,22 @@ Go to VSCode settings.json and add:
 
 Then, the code will format on save!
 
+## Combine eslint with prettier!
+
+There are errors coming from eslint that will be easily fixed by prettier, such as semicolons, etc.
+I don't wanna see those errors without having to save.
+
+So, we install eslint-config-prettier!
+```bash
+npm install --save-dev eslint-config-prettier
+```
+After installing, we just put it in the .eslintrc.js file.
+```bash
+extends: ['airbnb-base', 'eslint-config-prettier'],
+```
+
+And, we won't see the error anymore!
+
 ## Optional husky setup.
 
 [Husky](https://github.com/typicode/husky) can be used to run script before committing to GitHub. 
