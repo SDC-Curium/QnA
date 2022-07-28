@@ -17,7 +17,7 @@
     "prettier": "prettier --ignore-path .eslintignore  \"**/*.+(js|json)\"",
     "format": "npm run prettier -- --write",
     "check-format": "npm run prettier -- --list-different",
-    "validate": "npm run lint",
+    "validate": "npm run lint && npm run check-format",
     "prepare": "husky install"
   },
   "dependencies": {
@@ -25,6 +25,7 @@
     "bootstrap": "^4.5.0",
     "express": "^4.17.1",
     "moment": "^2.27.0",
+    "mongoose": "^6.5.0",
     "nodemon": "^2.0.4",
     "prettier": "^2.7.1",
     "prop-types": "^15.7.2",
