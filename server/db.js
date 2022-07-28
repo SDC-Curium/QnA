@@ -22,7 +22,7 @@ const QuestionSchema = new Schema({
 
 const Question = mongoose.model('Question', QuestionSchema);
 
-const findQuestion = (options) => Question.findOne(options).exec();
+const findQuestion = (options) => Question.find(options).exec();
 
 const createQuestion = (data) => Question.create(data);
 

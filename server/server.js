@@ -24,7 +24,7 @@ app.get('/qa/:id', (req, res) => {
 });
 
 // Submit question
-app.post('/qa:id', (req, res) => {
+app.post('/qa/:id', (req, res) => {
   const data = req.body;
   db.createQuestion({
     asker_email: data.email,
