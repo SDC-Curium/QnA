@@ -22,7 +22,7 @@ const QuestionSchema = new Schema({
 
 const Question = mongoose.model('Question', QuestionSchema);
 
-const findQuestion = (options) => Question.find(options).exec();
+const findQuestion = (options) => Question.findOne(options).exec();
 
 const createQuestion = (data) => Question.create(data);
 
@@ -32,18 +32,23 @@ const createQuestion = (data) => Question.create(data);
 
 /** Answers */
 const AnswerSchema = new Schema({
-  answer_id: Number,
+  answer_email: String,
+  answer_name: String,
+  body: String,
+  data_written: Number,
+  helpful: Number,
   id: Number,
-  url: String,
+  question_id: Number,
+  reported: String,
 });
 
 const Answer = mongoose.model('Answer', AnswerSchema);
 
-const findAnswer = (options) => Answer.find(options).exec();
+const findAnswer = (options) => Answer.findOne(options).exec();
 
 const createAnswer = (data) => Answer.create(data);
 
-// findAnswer({ id: 1 }).then((data) => console.log('Answer is ', data));
+// findAnswer({ question_id: 13 }).then((data) => console.log(data));
 
 /** Answers */
 const AnswerPhotoSchema = new Schema({
@@ -54,11 +59,9 @@ const AnswerPhotoSchema = new Schema({
 
 const AnswersPhoto = mongoose.model('Answers_Photo', AnswerPhotoSchema);
 
-const findAnswerPhoto = (options) => AnswersPhoto.find(options).exec();
+const findAnswerPhoto = (options) => AnswersPhoto.findOne(options).exec();
 
 const createAnswerPhoto = (data) => AnswersPhoto.create(data);
-
-findAnswerPhoto({ id: 4 }).then((data) => console.log('AnswerPhoto is ', data));
 
 module.exports = {
   findQuestion,
