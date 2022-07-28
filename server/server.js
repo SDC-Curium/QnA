@@ -10,9 +10,17 @@ app.use(express.static(path.join(__dirname, '/../dist')));
 app.use(express.json());
 
 // Find an answer
+// Takes a very long time!
 app.get('/qa/:id/answers', (req, res) => {
   db.findAnswer({ question_id: req.params.id })
-    .then((data) => res.send(data))
+    .then((data) => {
+      db.findAnswerPhoto({ answer_id: req.params.id }).then((photos) => {
+        res.send({
+          ...data,
+          photos,
+        });
+      });
+    })
     .catch((err) => console.error(err));
 });
 
@@ -23,7 +31,7 @@ app.get('/qa/:id', (req, res) => {
     .catch((err) => console.error(err));
 });
 
-// Submit question
+// Submit a question
 app.post('/qa/:id', (req, res) => {
   const data = req.body;
   db.createQuestion({
@@ -37,6 +45,39 @@ app.post('/qa/:id', (req, res) => {
     reported: 0,
   })
     .then(() => res.sendStatus(201))
+    .catch((err) => console.error(err));
+});
+
+// Submit an answer
+app.post('/qa/:id/answers', (req, res) => {
+  const data = req.body;
+  const promises = [];
+  if (data.photos.length !== 0) {
+    for (let i = 0; i < data.photos.length; i += 1) {
+      promises.push(
+        db.createAnswerPhoto({
+          answer_id: req.params.id,
+          id: 0,
+          url: data.photos[i],
+        })
+      );
+    }
+  }
+  Promise.all(promises)
+    .then(() => {
+      db.createAnswer({
+        asker_email: data.email,
+        asker_name: data.name,
+        body: data.body,
+        date_written: Date.now(),
+        helpful: 0,
+        id: 0,
+        question_id: req.params.id,
+        reported: 0,
+      })
+        .then(() => res.sendStatus(201))
+        .catch((err) => console.error(err));
+    })
     .catch((err) => console.error(err));
 });
 

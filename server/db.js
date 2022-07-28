@@ -48,8 +48,6 @@ const findAnswer = (options) => Answer.findOne(options).exec();
 
 const createAnswer = (data) => Answer.create(data);
 
-// findAnswer({ question_id: 13 }).then((data) => console.log(data));
-
 /** Answers */
 const AnswerPhotoSchema = new Schema({
   answer_id: Number,
@@ -59,10 +57,11 @@ const AnswerPhotoSchema = new Schema({
 
 const AnswersPhoto = mongoose.model('Answers_Photo', AnswerPhotoSchema);
 
-const findAnswerPhoto = (options) => AnswersPhoto.findOne(options).exec();
+const findAnswerPhoto = (options) => AnswersPhoto.find(options).limit(5).exec();
 
 const createAnswerPhoto = (data) => AnswersPhoto.create(data);
 
+findAnswerPhoto({ answer_id: 9 }).then((photos) => console.log(photos));
 module.exports = {
   findQuestion,
   createQuestion,
