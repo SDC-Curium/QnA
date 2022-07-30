@@ -26,9 +26,18 @@ const findQuestion = (options) => Question.find(options).exec();
 
 const createQuestion = (data) => Question.create(data);
 
-// findQuestion({ product_id: 1 }).then((data) =>
-//   console.log('Question is ', data)
-// );
+/** Answers Photos */
+const AnswerPhotoSchema = new Schema({
+  answer_id: Number,
+  id: Number,
+  url: String,
+});
+
+const AnswersPhoto = mongoose.model('Answers_Photo', AnswerPhotoSchema);
+
+const findAnswerPhoto = (options) => AnswersPhoto.find(options).limit(5).exec();
+
+const createAnswerPhoto = (data) => AnswersPhoto.create(data);
 
 /** Answers */
 const AnswerSchema = new Schema({
@@ -48,20 +57,42 @@ const findAnswer = (options) => Answer.findOne(options).exec();
 
 const createAnswer = (data) => Answer.create(data);
 
-/** Answers */
-const AnswerPhotoSchema = new Schema({
-  answer_id: Number,
-  id: Number,
-  url: String,
+/** CombinedAnswers */
+const CombinedAnswerSchema = new Schema({
+  answer_email: String,
+  answer_name: String,
+  body: String,
+  data_written: Number,
+  helpful: Number,
+  question_id: Number,
+  reported: String,
+  photos: [AnswerPhotoSchema],
 });
 
-const AnswersPhoto = mongoose.model('Answers_Photo', AnswerPhotoSchema);
+const CombinedAnswer = mongoose.model('CombinedAnswer', CombinedAnswerSchema);
 
-const findAnswerPhoto = (options) => AnswersPhoto.find(options).limit(5).exec();
+const findCombinedAnswer = (options) => CombinedAnswer.findOne(options).exec();
 
-const createAnswerPhoto = (data) => AnswersPhoto.create(data);
+const createCombinedAnswer = (data) => CombinedAnswer.create(data);
 
-findAnswerPhoto({ answer_id: 9 }).then((photos) => console.log(photos));
+// const aggregate = Answer.aggregate([{ $match: { question_id: 3518963 } }]);
+
+function cca(id) {
+  Promise.all([
+    findAnswer({ question_id: id }),
+    findAnswerPhoto({ answer_id: id }),
+  ])
+    .then(([data, photos]) => {
+      console.log({
+        // eslint-disable-next-line no-underscore-dangle
+        ...data._doc,
+        photos,
+      });
+    })
+    .catch((err) => console.error(err));
+}
+cca(3518963);
+
 module.exports = {
   findQuestion,
   createQuestion,
@@ -69,4 +100,6 @@ module.exports = {
   createAnswer,
   findAnswerPhoto,
   createAnswerPhoto,
+  findCombinedAnswer,
+  createCombinedAnswer,
 };
