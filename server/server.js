@@ -10,8 +10,17 @@ app.use(express.static(path.join(__dirname, '/../dist')));
 app.use(express.json());
 
 // Find an answer
-// Takes a very long time!
 app.get('/qa/:id/answers', (req, res) => {
+  db.findCombinedAnswer({ question_id: req.params.id })
+    .then((data) => res.send(data))
+    .catch((err) => {
+      console.error(err);
+      res.sendStatus(500);
+    });
+});
+
+// Takes a very long time!
+app.get('/qa/:id/slowAnswers', (req, res) => {
   Promise.all([
     db.findAnswer({ question_id: req.params.id }),
     db.findAnswerPhoto({ answer_id: req.params.id }),
@@ -23,14 +32,20 @@ app.get('/qa/:id/answers', (req, res) => {
         photos,
       });
     })
-    .catch((err) => console.error(err));
+    .catch((err) => {
+      console.error(err);
+      res.sendStatus(500);
+    });
 });
 
 // Find a question
 app.get('/qa/:id', (req, res) => {
   db.findQuestion({ product_id: req.params.id })
     .then((data) => res.send(data))
-    .catch((err) => console.error(err));
+    .catch((err) => {
+      console.error(err);
+      res.sendStatus(500);
+    });
 });
 
 // Submit a question
@@ -47,7 +62,10 @@ app.post('/qa/:id', (req, res) => {
     reported: 0,
   })
     .then(() => res.sendStatus(201))
-    .catch((err) => console.error(err));
+    .catch((err) => {
+      console.error(err);
+      res.sendStatus(500);
+    });
 });
 
 // Submit an answer
@@ -77,9 +95,15 @@ app.post('/qa/:id/answers', (req, res) => {
         reported: 0,
       })
         .then(() => res.sendStatus(201))
-        .catch((err) => console.error(err));
+        .catch((err) => {
+          console.error(err);
+          res.sendStatus(500);
+        });
     })
-    .catch((err) => console.error(err));
+    .catch((err) => {
+      console.error(err);
+      res.sendStatus(500);
+    });
 });
 
 app.listen(port, () =>
