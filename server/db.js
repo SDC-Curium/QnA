@@ -69,30 +69,12 @@ const CombinedAnswerSchema = new Schema({
   photos: [AnswerPhotoSchema],
 });
 
-const CombinedAnswer = mongoose.model('CombinedAnswer', CombinedAnswerSchema);
+const CombinedAnswer = mongoose.model('combined_answer', CombinedAnswerSchema);
 
 const findCombinedAnswer = (options) => CombinedAnswer.findOne(options).exec();
 
 const createCombinedAnswer = (data) => CombinedAnswer.create(data);
-
-// const aggregate = Answer.aggregate([{ $match: { question_id: 3518963 } }]);
-
-function cca(id) {
-  Promise.all([
-    findAnswer({ question_id: id }),
-    findAnswerPhoto({ answer_id: id }),
-  ])
-    .then(([data, photos]) => {
-      console.log({
-        // eslint-disable-next-line no-underscore-dangle
-        ...data._doc,
-        photos,
-      });
-    })
-    .catch((err) => console.error(err));
-}
-cca(3518963);
-
+findCombinedAnswer({ question_id: 200 }).then((data) => console.log(data));
 module.exports = {
   findQuestion,
   createQuestion,
