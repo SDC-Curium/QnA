@@ -2,12 +2,31 @@
 import http from 'k6/http';
 import { sleep } from 'k6';
 
-export default function () {
+export default function testing() {
   // http.get('https://test.k6.io');
-  const id = Math.floor(Math.random() * 10000);
+  const id = Math.floor(Math.random() * 100000);
   http.get(`http://localhost:3000/qa/${id}`);
+  http.get(`http://localhost:3000/qa/${id}/answers`);
   sleep(1);
 }
+// db.questions.aggregate([
+//   {
+//     $lookup: {
+//       from: 'combined_answers',
+//       localField: 'id',
+//       foreignField: 'question_id',
+//       as: 'answers'
+//     }
+//   }
+// ])
+
+// db.combined_answers.aggregate([
+//   {
+//     $project: {
+//       _id: 0,
+
+//     }
+// ])
 
 // db.air_alliances.aggregate([
 //   {
