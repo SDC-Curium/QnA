@@ -3,6 +3,7 @@
 const express = require('express');
 const path = require('path');
 const db = require('./db');
+const pool = require('./pg');
 
 const app = express();
 const port = 3000;
@@ -34,10 +35,104 @@ let photoId;
   console.log('Finished Initializing');
 })();
 
+// Find a product
+app.get('/products', (req, res) => {
+  pool
+    .query('SELECT * FROM product LIMIT 5')
+    .then((data) => {
+      res.send(data.rows);
+      console.log(data.rows);
+      // { name: 'brianc', email: 'brian.m.carlson@gmail.com' }
+    })
+    .catch((e) => console.error(e.stack));
+});
+
+// Find related items
+app.get('/products/:product_id/related', (req, res) => {
+  pool
+    .query(
+      `SELECT array_agg(related_product_id)
+       FROM related
+       GROUP BY current_product_id
+       HAVING current_product_id = $1;`,
+      [req.params.product_id]
+    )
+    .then((data) => {
+      console.log(data.rows[0].array_agg);
+      res.send(data.rows[0].array_agg);
+    })
+    .catch((e) => console.error(e.stack));
+});
+
+// Find product info
+app.get('/products/:product_id', (req, res) => {
+  pool
+    .query(
+      `SELECT
+        product.id, 
+        product.name, 
+        product.slogan,
+        product.description,
+        product.category,
+        product.default_price,
+        (SELECT 
+        array_agg((SELECT row_to_json(_) FROM (SELECT f.feature, f.value) AS _)) AS features
+      FROM
+        feature AS f
+      WHERE product_id = $1)
+      FROM product
+      WHERE id = $1;`,
+      [req.params.product_id]
+    )
+    .then((data) => {
+      console.log(data.rows);
+      res.send(data.rows);
+    })
+    .catch((e) => console.error(e.stack));
+});
+
+// Find product styles
+app.get('/products/:product_id/styles', (req, res) => {
+  pool
+    .query(
+      `SELECT 
+        id AS style_id,
+          name,
+          original_price,
+          COALESCE(NULLIF(sale_price, 'null'), '0') AS sale_price,
+          (default_style::bool) AS "default?",
+        (SELECT 
+          array_agg((SELECT row_to_json(_) FROM (SELECT p.thumbnail_url, p.url) AS _)) AS photos
+          FROM
+            photo AS p
+            WHERE p.style_id = style.id),
+        (SELECT 
+            jsonb_combine((SELECT json_object_agg(s.id, row_to_json(_)) FROM (SELECT s.quantity, s.size) AS _)::jsonb) AS skus
+          FROM
+            sku AS s
+            WHERE s.style_id = style.id)
+        FROM style AS style
+        WHERE product_id = $1;`,
+      [req.params.product_id]
+    )
+    .then((data) => {
+      console.log(data.rows);
+      res.send(data.rows);
+    })
+    .catch((e) => console.error(e.stack));
+});
+
 // Find an answer
 app.get('/qa/:id/answers', (req, res) => {
   db.findCombinedAnswer({ question_id: req.params.id })
-    .then((data) => res.send(data))
+    .then((data) =>
+      res.send({
+        question: req.params.id,
+        page: 0,
+        count: 5,
+        results: data,
+      })
+    )
     .catch((err) => {
       console.error(err);
       res.sendStatus(500);
@@ -47,7 +142,12 @@ app.get('/qa/:id/answers', (req, res) => {
 // Find a question
 app.get('/qa/:id', (req, res) => {
   db.findQuestion({ product_id: req.params.id })
-    .then((data) => res.send(data))
+    .then((data) =>
+      res.send({
+        product_id: req.params.id,
+        results: data,
+      })
+    )
     .catch((err) => {
       console.error(err);
       res.sendStatus(500);
