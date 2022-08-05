@@ -4,9 +4,11 @@ import { sleep } from 'k6';
 
 export default function testing() {
   // http.get('https://test.k6.io');
-  const id = Math.floor(Math.random() * 100000);
-  http.get(`http://localhost:3000/qa/${id}`);
-  http.get(`http://localhost:3000/qa/${id}/answers`);
+  const qid = Math.floor(Math.random() * 1000011);
+  const aid = Math.floor(Math.random() * 3518964);
+
+  http.get(`http://localhost:3000/qa/${qid}`);
+  http.get(`http://localhost:3000/qa/${aid}/answers`);
   sleep(1);
 }
 // db.questions.aggregate([

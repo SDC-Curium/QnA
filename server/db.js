@@ -1,6 +1,5 @@
 /* eslint-disable no-console */
 const mongoose = require('mongoose');
-const autoIncrement = require('mongoose-auto-increment');
 
 const { Schema } = mongoose;
 
@@ -8,9 +7,6 @@ mongoose
   .connect('mongodb://localhost:27017/test')
   .then(console.log('Connected to MongoDB...'))
   .catch((err) => console.log(err));
-
-const connection = mongoose.createConnection('mongodb://localhost:27017/test');
-autoIncrement.initialize(connection);
 
 // /** Questions */
 const QuestionSchema = new Schema({
